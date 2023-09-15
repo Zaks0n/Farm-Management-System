@@ -1,13 +1,13 @@
-const Farmers = require('../models/farmerModel');
+const Customers = require('../models/customerModel');
 const { hashPassword } = require('../utils/passwordHelber');
 
 
-const createFarmer = async (req, res) => {
+const createCustomer = async (req, res) => {
     try {
-        const { fullName, address, phoneNo, email, password, image, farmName, farmSize, farmLocation } = req.body;
+        const { fullName, address, phoneNo, email, password, image } = req.body;
         if (!fullName || !address || !phoneNo || !email || !password) {
             return res.status(400).json({
-                message: 'Empty required required feild\\s',
+                message: 'Empty required feilds',
                 feilds: {
                     fullName: fullName ? 'Valid' : 'Required',
                     address: address ? 'Valid' : 'Required',
@@ -17,27 +17,24 @@ const createFarmer = async (req, res) => {
                 },
             });
         }
-        const doublecate = await Farmers.findOne({ email: email, phoneNo: phoneNo });
+        const doublecate = await Customers.findOne({ email: email, phoneNo: phoneNo });
         if (doublecate) {
             return res.status(409).json({
-                message: 'Farmer already exists',
+                message: 'Customer already exists',
             });
         }
         const hashedPassword = await hashPassword(password);
-        const farmer = await Farmers.create({
+        const customer = await Customers.create({
             fullName,
             address,
             phoneNo,
             email,
             password: hashedPassword,
             image,
-            farmName,
-            farmSize,
-            farmLocation,
         });
         res.status(201).json({
-            message: 'Farmer created successfully',
-            data: farmer,
+            message: 'Customer created successfully',
+            data: customer,
         });
     } catch (error) {
         console.log(error);
@@ -48,12 +45,12 @@ const createFarmer = async (req, res) => {
     }
 }
 
-const getFarmers = async (req, res) => {
+const getCustomers = async (req, res) => {
     try {
-        const farmers = await Farmers.find();
+        const customers = await Customers.find();
         res.status(200).json({
-            message: 'All farmers',
-            data: farmers,
+            message: 'All customers',
+            data: customers,
         });
     } catch (error) {
         res.status(500).json({
@@ -63,17 +60,18 @@ const getFarmers = async (req, res) => {
     }
 }
 
-const getFarmer = async (req, res) => {
+const getCustomer = async (req, res) => {
     try {
-        const farmer = await Farmers.find({ email: req.params.email });
-        if (!farmer) {
+        const { email } = req.params;
+        const customer = await Customers.find({ email: email });
+        if (!customer) {
             return res.status(404).json({
-                message: 'Farmer not found',
+                message: 'Customer not found',
             });
         }
         res.status(200).json({
-            message: 'Farmer',
-            data: farmer,
+            message: 'Customer',
+            data: customer,
         });
     } catch (error) {
         res.status(500).json({
@@ -83,15 +81,15 @@ const getFarmer = async (req, res) => {
     }
 }
 
-const updateFarmer = async (req, res) => {
+const updateCustomer = async (req, res) => {
     try {
-        const farmer = await Farmers.findById(req.params.id);
-        if (!farmer) {
+        const customer = await Customers.findById(req.params.id);
+        if (!customer) {
             return res.status(404).json({
-                message: 'Farmer not found',
+                message: 'Customer not found',
             });
         }
-        const { fullName, address, phoneNo, email, password, image, farmName, farmSize, farmLocation } = req.body;
+        const { fullName, address, phoneNo, email, password, image } = req.body;
         if (!fullName || !address || !phoneNo || !email || !password) {
             return res.status(400).json({
                 message: 'Empty required required feild\\s',
@@ -105,23 +103,19 @@ const updateFarmer = async (req, res) => {
             });
         }
         const hashedPassword = await hashPassword(password);
-        const updatedFarmer = await Farmers.findByIdAndUpdate(req.params.id, {
+        const updatedCustomer = await Customers.findByIdAndUpdate(req.params.id, {
             fullName,
             address,
             phoneNo,
             email,
             password: hashedPassword,
             image,
-            farmName,
-            farmSize,
-            farmLocation,
-        }, { new: true });
+        });
         res.status(200).json({
-            message: 'Farmer updated successfully',
-            data: updatedFarmer,
+            message: 'Customer updated successfully',
+            data: updatedCustomer,
         });
     } catch (error) {
-        console.log(error);
         res.status(500).json({
             message: 'Something went wrong',
             error: error.message,
@@ -129,20 +123,19 @@ const updateFarmer = async (req, res) => {
     }
 }
 
-const deleteFarmer = async (req, res) => {
+const deleteCustomer = async (req, res) => {
     try {
-        const farmer = await Farmers.findById(req.params.id);
-        if (!farmer) {
+        const customer = await Customers.findById(req.params.id);
+        if (!customer) {
             return res.status(404).json({
-                message: 'Farmer not found',
+                message: 'Customer not found',
             });
         }
-        await Farmers.findByIdAndDelete(req.params.id);
+        await Customers.findByIdAndDelete(req.params.id);
         res.status(200).json({
-            message: 'Farmer deleted successfully',
+            message: 'Customer deleted successfully',
         });
     } catch (error) {
-        console.log(error);
         res.status(500).json({
             message: 'Something went wrong',
             error: error.message,
@@ -151,9 +144,9 @@ const deleteFarmer = async (req, res) => {
 }
 
 module.exports = {
-    createFarmer,
-    getFarmers,
-    getFarmer,
-    updateFarmer,
-    deleteFarmer,
+    createCustomer,
+    getCustomers,
+    getCustomer,
+    updateCustomer,
+    deleteCustomer,
 }
