@@ -1,11 +1,13 @@
 const Product = require('../models/productModel');
-const { ObjectId } = require('mongodb');
 
 class ProductController {
   static async getProducts (request, response) {
     try {
       const products = await Product.find({});
-      return response.status(200).json(products);
+      return response.status(200).json({
+        message: 'All products',
+        data: products
+      });
     } catch (error) {
       return response.status(500).json({
         message: 'Something Went Wrong',
@@ -17,7 +19,7 @@ class ProductController {
   static async getProduct (request, response) {
     try {
       const productId = request.params.id;
-      const product = await Product.findOne({ _id: ObjectId(productId) });
+      const product = await Product.findById(productId);
 
       if (!product) {
         return response.status(404).json({ error: 'Product Not Found' });
@@ -44,7 +46,6 @@ class ProductController {
             farmerId: farmerId ? 'Valid' : 'Required',
             description: description ? 'Valid' : 'Required'
           },
-          data: br
         });
       }
 
@@ -74,7 +75,7 @@ class ProductController {
     try {
       const productId = request.params.id;
       const {productName, price, description} = request.body;
-      const product = await Product.findOne({ _id: ObjectId(productId) });
+      const product = await Product.findById(productId);
 
       if (!product) {
         return response.status(404).json({ error: 'Product Not Found' });
@@ -111,7 +112,7 @@ class ProductController {
   static async deleteProduct (request, response) {
     try {
       const productId = request.params.id;
-      const product = await Product.findOne({ _id: ObjectId(productId) });
+      const product = await Product.findById(productId);
   
       if (!product) {
         return response.status(404).json({

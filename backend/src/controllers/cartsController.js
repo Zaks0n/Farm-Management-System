@@ -1,12 +1,14 @@
 const Cart = require('../models/cartModel');
 const Product = require('../models/productModel');
-const { ObjectId } = require('mongodb');
 
 class CartController {
   static async getCarts (request, response) {
     try {
       const carts = await Cart.find({});
-      return response.status(200).json(carts)
+      return response.status(200).json({
+        message: 'All carts',
+        data: carts
+      });
     } catch (error) {
       return response.status(500).json({
         message: 'Something Went Wrong',
@@ -18,7 +20,7 @@ class CartController {
   static async getCart (request, response) {
     try {
       const cartId = request.params.cartId;
-      const cart = await Cart.findOne({ _id: ObjectId(cartId) });
+      const cart = await Cart.findById(cartId);
 
       if (!cart) {
         return response.status(404).json({
@@ -81,7 +83,7 @@ class CartController {
     try {
       const { totalPrice, customerId, products } = request.body;
       const cartId = request.params.cartId;
-      const cart = await Cart.findOne({ _id: ObjectId(cartId) });
+      const cart = await Cart.findById(cartId);
 
       if (!cart) {
         return response.status(404).json({ error: 'Cart Not Found' });
@@ -109,7 +111,7 @@ class CartController {
   static async deleteCart (request, response) {
     try {
       const cartId = request.params.cartId;
-      const cart = await Cart.findOne({ _id: ObjectId(cartId) });
+      const cart = await Cart.findById(cartId);
 
       if (!cart) {
         return response.status(404).json({ error: 'Cart Not Found' });
@@ -131,7 +133,7 @@ class CartController {
   static async getCartProducts (request, response) {
     try {
       const cartId = request.params.cartId;
-      const cart = await Cart.findOne( {_id: ObjectId(cartId) } );
+      const cart = await Cart.findById(cartId);
 
       if (!cart) {
         return response.status(404).json({ error: 'Cart Not Found' });
@@ -153,8 +155,8 @@ class CartController {
     try {
       const cartId = request.params.cartId;
       const productId = request.params.productId;
-      let cart = await Cart.findOne({ _id: ObjectId(cartId) });
-      const product = await Product.findOne({ _id: ObjectId(productId) });
+      let cart = await Cart.findById(cartId);
+      const product = await Product.findById(productId);
 
       if (!cart) {
         return response.status(404).json({
@@ -192,8 +194,8 @@ class CartController {
     try {
       const cartId = request.params.cartId;
       const productId = request.params.productId;
-      let cart = await Cart.findOne({ _id: ObjectId(cartId) });
-      const product = await Product.findOne({ _id: ObjectId(productId) });
+      let cart = await Cart.findById(cartId);
+      const product = await Product.findById(productId);
 
       if (!cart) {
         return response.status(404).json({

@@ -1,11 +1,13 @@
-const { ObjectId } = require('mongodb');
 const Order = require('../models/orderModel');
 
 class OrderController {
   static async getOrders (request, response) {
     try {
       const orders = await Order.find({});
-      return response.status(200).json(orders);
+      return response.status(200).json({
+        message: 'All orders',
+        data: orders
+      });
     } catch (error) {
       return response.status(500).json({
         message: 'Something Went Wrong',
@@ -17,7 +19,7 @@ class OrderController {
   static async getOrder (request, response) {
     try {
       const orderId = request.params.orderId;
-      const order = await Order.findOne({ _id: ObjectId(orderId) });
+      const order = await Order.findById(orderId);
   
       if (!order) {
         return response.status(404).json({ error: 'Order Not Found' });
@@ -82,7 +84,7 @@ class OrderController {
     try {
       const { orderStatus, customerId, cartId} = request.body;
       const orderId = request.params.orderId;
-      const order = await Order.findOne({ _id: ObjectId(orderId) });
+      const order = await Order.findById(orderId);
 
       if (!order) {
         return response.status(404).json({ error: 'Order Not Found' });
@@ -111,7 +113,7 @@ class OrderController {
   static async deleteOrder (request, response) {
     try {
       const orderId = request.params.orderId;
-      const order = await Order.findOne({ _id: ObjectId(orderId) });
+      const order = await Order.findById(orderId);
 
       if (!order) {
         return response.status(404).json({ error: 'Order Not Found' });
@@ -134,7 +136,7 @@ class OrderController {
   static async getOrderedCart (request, response) {
     try {
       const orderId = request.params.orderId;
-      const order = await Order.findOne({ _id: ObjectId(orderId) });
+      const order = await Order.findById(orderId);
   
       if (!order) {
         return response.status(404).json({ error: 'Order Not Found' });
