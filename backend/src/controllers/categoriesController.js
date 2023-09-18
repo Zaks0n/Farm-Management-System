@@ -1,4 +1,3 @@
-const { ObjectId } = require('mongodb');
 const Category = require('../models/categoryModel');
 const Product = require('../models/productModel');
 
@@ -6,7 +5,10 @@ class CategoryController {
   static async getCategories (request, response) {
     try {
       const categories = await Category.find({});
-      return response.status(200).json(categories);
+      return response.status(200).json({
+        message: 'All categories',
+        data: categories
+      });
     } catch (error) {
       return response.status(500).json({
         message: 'Something Went Wrong',
@@ -18,7 +20,7 @@ class CategoryController {
   static async getCategory (request, response) {
     try {
       const categoryId = request.params.categoryId;
-      const category = await Category.findOne({ _id: ObjectId(categoryId) });
+      const category = await Category.findById(categoryId);
   
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
@@ -72,7 +74,7 @@ class CategoryController {
     try {
       const { categoryName } = request.body;
       const categoryId = request.params.categoryId;
-      const category = await Category.findOne({ _id: ObjectId(categoryId) });
+      const category = await Category.findById(categoryId);
   
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
@@ -99,8 +101,7 @@ class CategoryController {
   static async deleteCategory (request, response) {
     try {
       const categoryId = request.params.categoryId;
-      const category = await Category.findOne({ _id: ObjectId(categoryId) });
-  
+      const category = await Category.findById(categoryId);
       if (!category) {
         return response.status(404).json({ message: 'Category Not Found' });
       }
@@ -123,7 +124,7 @@ class CategoryController {
   static async getProductsFromCategory (request, response) {
     try {
       const categoryId = request.params.categoryId;
-      const category = await Category.findOne({ _id: ObjectId(categoryId) });
+      const category = await Category.findById(categoryId);
   
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
@@ -147,8 +148,8 @@ class CategoryController {
     try {
       const categoryId = request.params.categoryId;
       const productId = request.params.productId;
-      let category = await Category.findOne({ _id: ObjectId(categoryId) });
-      const product = await Product.findOne({ _id: ObjectId(productId) });
+      let category = await Category.findById(categoryId);
+      const product = await Product.findById(productId);
   
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
@@ -188,8 +189,8 @@ class CategoryController {
     try {
       const categoryId = request.params.categoryId;
       const productId = request.params.productId;
-      const category = await Category.findOne({ _id: ObjectId(categoryId) });
-      const product = await Product.findOne({ _id: ObjectId(productId) });
+      const category = await Category.findById(categoryId);
+      const product = await Product.findById(productId);
   
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
