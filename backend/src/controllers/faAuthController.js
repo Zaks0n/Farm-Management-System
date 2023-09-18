@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Farmers = require('../models/farmerModel');
 const { comparePassword } = require('../utils/passwordHelber');
+const sendEmail = require('../utils/sendEmail');
 require('dotenv').config();
 
 const ACCESS_TOKEN_SECRET = 'access-token-secret-example';
@@ -123,9 +124,97 @@ const handleLogout = async (req, res) => {
     }
 }
 
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({
+                message: 'Email is required',
+            });
+        }
+        const farmer = await Farmers.findOne({ email: email });
+        if (!farmer) {
+            return res.status(404).json({
+                message: 'Email not found',
+            });
+        }
+        const resetToken = jwt.sign(
+            { id: farmer._id },
+            ACCESS_TOKEN_SECRET,
+            { expiresIn: '1h' }
+        );
+        await Farmers.findByIdAndUpdate(farmer._id, { resetToken });
+        const resetUrl = `http://localhost:3000/api/v1/farmer/auth/reset-password/${resetToken}`;
+        const message = `Click on the link to reset your password:\n\n ${resetUrl}
+        \n\nthis email valid for 1 hour.\n\nIf you didn't request this, please ignore this email.`;
+        await sendEmail({
+            email: farmer.email,
+            subject: 'Reset Password',
+            message,
+        });
+        res.status(200).json({
+            message: `Reset link sent to email: ${farmer.email}`,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Something went wrong',
+            error: error.message,
+        });
+    }
+}
+
+const resetPassword = async (req, res) => {
+    try {
+        const { password, confirmPassword } = req.body;
+        const { resetToken } = req.params;
+        if (!password || !confirmPassword) {
+            return res.status(400).json({
+                message: 'All feilds are required',
+                feilds: {
+                    password: password ? 'Valid' : 'Required',
+                    confirmPassword: confirmPassword ? 'Valid' : 'Required',
+                },
+            });
+        }
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                message: 'Password and confirm password must be same',
+            });
+        }
+        jwt.verify(
+            resetToken,
+            ACCESS_TOKEN_SECRET,
+            async (err, decoded) => {
+                if (err) {
+                    return res.status(403).json({
+                        message: 'Forbidden',
+                    });
+                }
+                const farmer = await Farmers.findOne({ _id: decoded.id });
+                if (!farmer) {
+                    return res.status(401).json({
+                        message: 'Unauthorized',
+                    });
+                }
+                const hashedPassword = await hashPassword(password);
+                await Farmers.findByIdAndUpdate(farmer._id, { password: hashedPassword, resetToken: '' });
+                return res.status(200).json({
+                    message: 'Password reset successful',
+                });
+            });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Something went wrong',
+            error: error.message,
+        });
+    }
+}
+
 
 module.exports = {
     handleLogin,
     handleRefreshToken,
     handleLogout,
+    forgotPassword,
+    resetPassword,
 };

@@ -6,11 +6,11 @@ const {
     updateFarmer,
     deleteFarmer,
 } = require('../controllers/farmerController');
-const verifyJWT = require('../middlewares/verifyJWT');
+const verifyJWT = require('../middlewares/faVerifyJWT');
 
 router.post('/register', createFarmer);
 router.get('/:email', getFarmer);
-router.get('/', verifyJWT, getFarmers);
+router.get('/', getFarmers);
 router.put('/:id', updateFarmer);
 router.delete('/:id', deleteFarmer);
 
