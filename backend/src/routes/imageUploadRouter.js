@@ -3,7 +3,7 @@ const fileUpload = require('express-fileupload');
 const path = require('path');
 const fs = require('fs');
 const Farmer = require('../models/farmerModel');
-const verifyJWT = require('../middlewares/verifyJWT');
+const verifyJWT = require('../middlewares/faVerifyJWT');
 
 router.use(verifyJWT);
 

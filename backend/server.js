@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const dbConn = require('./src/db/dbConn');
 const farmerRouter = require('./src/routes/farmerRouter');
@@ -17,6 +18,11 @@ dbConn();
 
 const app = express();
 
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -27,7 +33,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api/v1', indexRouter);
+app.use('/', indexRouter);
 app.use('/api/v1/farmer/auth', faAuthRouter);
 app.use('/api/v1/customer/auth', cuAuthRouter);
 app.use('/api/v1/farmers', farmerRouter);
