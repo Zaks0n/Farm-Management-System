@@ -5,9 +5,11 @@ const {
     getCustomer,
     updateCustomer,
     deleteCustomer,
-    handleForgotPassword,
-    resetPassword,
 } = require('../controllers/customerController');
+const {
+    handleForgotPassword,
+    resetPassword
+} = require('../controllers/cuAuthController');
 const verifyJWT = require('../middlewares/faVerifyJWT');
 
 router.post('/register', createCustomer);

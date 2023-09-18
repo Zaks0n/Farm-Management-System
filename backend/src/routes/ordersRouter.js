@@ -1,5 +1,6 @@
 const express = require('express');
 const OrderController = require('../controllers/ordersController');
+const verifyJWT = require('../middlewares/verifyJWT');
 
 const orderRouter = express.Router();
 
@@ -11,15 +12,15 @@ orderRouter.get('/orders/:orderId', (request, response) => {
   OrderController.getOrder(request, response);
 });
 
-orderRouter.post('/orders', (request, response) => {
+orderRouter.post('/orders', verifyJWT, (request, response) => {
   OrderController.createOrder(request, response);
 });
 
-orderRouter.put('/orders/:orderId', (request, response) => {
+orderRouter.put('/orders/:orderId', verifyJWT, (request, response) => {
   OrderController.updateOrder(request, response);
 });
 
-orderRouter.delete('/orders/:orderId', (request, response) => {
+orderRouter.delete('/orders/:orderId', verifyJWT, (request, response) => {
   OrderController.deleteOrder(request, response);
 });
 
