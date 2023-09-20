@@ -2,7 +2,7 @@ const Cart = require('../models/cartModel');
 const Product = require('../models/productModel');
 
 class CartController {
-  static async getCarts (request, response) {
+  static async getCarts(request, response) {
     try {
       const carts = await Cart.find({});
       return response.status(200).json({
@@ -17,7 +17,7 @@ class CartController {
     }
   }
 
-  static async getCart (request, response) {
+  static async getCart(request, response) {
     try {
       const cartId = request.params.cartId;
       const cart = await Cart.findById(cartId);
@@ -41,7 +41,7 @@ class CartController {
     }
   }
 
-  static async createCart (request, response) {
+  static async createCart(request, response) {
     try {
       const { customerId } = request.body;
 
@@ -79,7 +79,7 @@ class CartController {
     }
   }
 
-  static async updateCart (request, response) {
+  static async updateCart(request, response) {
     try {
       const { totalPrice, customerId, products } = request.body;
       const cartId = request.params.cartId;
@@ -108,7 +108,7 @@ class CartController {
     }
   }
 
-  static async deleteCart (request, response) {
+  static async deleteCart(request, response) {
     try {
       const cartId = request.params.cartId;
       const cart = await Cart.findById(cartId);
@@ -130,7 +130,7 @@ class CartController {
     }
   }
 
-  static async getCartProducts (request, response) {
+  static async getCartProducts(request, response) {
     try {
       const cartId = request.params.cartId;
       const cart = await Cart.findById(cartId);
@@ -168,13 +168,14 @@ class CartController {
         });
       }
 
-      cart = await Cart.findByIdAndUpdate(cartId, { $push: {
-        products: [ ObjectId(productId) ]
-      },
+      cart = await Cart.findByIdAndUpdate(cartId, {
+        $push: {
+          products: [ObjectId(productId)]
+        },
         $set: {
           updatedAt: Date.now(),
           totalPrice: cart.totalPrice + product.price
-      }
+        }
       }, { new: true });
 
       return response.status(200).json({
@@ -190,7 +191,7 @@ class CartController {
     }
   }
 
-  static async deleteProductFromCart (request, response) {
+  static async deleteProductFromCart(request, response) {
     try {
       const cartId = request.params.cartId;
       const productId = request.params.productId;
@@ -207,9 +208,10 @@ class CartController {
         });
       }
 
-      cart = await Cart.findByIdAndUpdate(cartId, { $pull: {
-        products: ObjectId(productId)
-      },
+      cart = await Cart.findByIdAndUpdate(cartId, {
+        $pull: {
+          products: ObjectId(productId)
+        },
         $set: {
           updatedAt: Date.now(),
           totalPrice: cart.totalPrice - product.price

@@ -1,9 +1,14 @@
 const Product = require('../models/productModel');
+const Category = require('../models/categoryModel');
 
 class ProductController {
-  static async getProducts (request, response) {
+  static async getProducts(request, response) {
     try {
-      const products = await Product.find({});
+      let filter = {};
+      if (request.query.category) {
+        filter = { categoryId: request.query.category };
+      }
+      const products = await Product.find(filter).populate('categoryId', 'categoryName -_id').exec();
       return response.status(200).json({
         message: 'All products',
         data: products
@@ -16,7 +21,7 @@ class ProductController {
     }
   }
 
-  static async getProduct (request, response) {
+  static async getProduct(request, response) {
     try {
       const productId = request.params.id;
       const product = await Product.findById(productId);
@@ -24,7 +29,7 @@ class ProductController {
       if (!product) {
         return response.status(404).json({ error: 'Product Not Found' });
       }
-  
+
       return response.status(200).json(product);
 
     } catch (error) {
@@ -35,11 +40,31 @@ class ProductController {
     }
   }
 
-  static async addProduct (request, response) {
+  // static async getProductsByCategory(request, response) {
+  //   try {
+  //     let category = request.query.category;
+  //     if (category) {
+  //       category = category.split(',');
+  //     }
+  //     const products = await Product.find({ categoryId: { $in: category } }).populate('categoryId', 'categoryName -_id').exec();
+  //     return response.status(200).json({
+  //       message: 'All products',
+  //       data: products
+  //     });
+  //   } catch (error) {
+  //     return response.status(500).json({
+  //       message: 'Something Went Wrong',
+  //       error: error.message
+  //     });
+  //   }
+  // }
+
+  static async addProduct(request, response) {
     try {
-      const {productName, price, farmerId, description} = request.body;
-      if (!productName || !price || !farmerId || !description) {
+      const { productName, price, description, stock, categoryId } = request.body;
+      if (!productName || !price || !description || !stock || !categoryId) {
         return response.status(400).json({
+          message: 'All fields are required',
           error: {
             productName: productName ? 'Valid' : 'Required',
             price: price ? 'Valid' : 'Required',
@@ -48,12 +73,21 @@ class ProductController {
           },
         });
       }
-
+      const category = await Category.findById(categoryId);
+      if (!category) {
+        return response.status(404).json({
+          message: 'Category Not Found',
+          error: 'Category Not Found'
+        });
+      }
+      const { farmerId } = request.id;
       const product = await Product.create({
         productName,
         price,
-        farmerId: ObjectId(farmerId),
-        description
+        farmerId,
+        description,
+        stock,
+        categoryId
       });
 
       product.save();
@@ -71,10 +105,10 @@ class ProductController {
     }
   }
 
-  static async updateProduct (request, response) {
+  static async updateProduct(request, response) {
     try {
       const productId = request.params.id;
-      const {productName, price, description} = request.body;
+      const { productName, price, description } = request.body;
       const product = await Product.findById(productId);
 
       if (!product) {
@@ -109,11 +143,11 @@ class ProductController {
     }
   }
 
-  static async deleteProduct (request, response) {
+  static async deleteProduct(request, response) {
     try {
       const productId = request.params.id;
       const product = await Product.findById(productId);
-  
+
       if (!product) {
         return response.status(404).json({
           error: 'Product Not Found'

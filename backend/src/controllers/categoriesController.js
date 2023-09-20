@@ -2,7 +2,7 @@ const Category = require('../models/categoryModel');
 const Product = require('../models/productModel');
 
 class CategoryController {
-  static async getCategories (request, response) {
+  static async getCategories(request, response) {
     try {
       const categories = await Category.find({});
       return response.status(200).json({
@@ -17,11 +17,11 @@ class CategoryController {
     }
   }
 
-  static async getCategory (request, response) {
+  static async getCategory(request, response) {
     try {
       const categoryId = request.params.categoryId;
-      const category = await Category.findById(categoryId);
-  
+      const category = await Category.findById(categoryId).populate('products', 'productName').exec();
+
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
       }
@@ -35,11 +35,11 @@ class CategoryController {
     }
   }
 
-  static async createCategory (request, response) {
+  static async createCategory(request, response) {
     try {
       const { categoryName } = request.body;
       let category = await Category.findOne({ categoryName });
-  
+
       if (!categoryName) {
         return response.status(400).json({
           message: 'Requirement fields not found',
@@ -50,7 +50,7 @@ class CategoryController {
       if (category) {
         return response.status(404).json({ error: 'Category already exists' });
       }
-      
+
       category = await Category.create({
         categoryName
       });
@@ -70,12 +70,12 @@ class CategoryController {
     }
   }
 
-  static async updateCategory (request, response) {
+  static async updateCategory(request, response) {
     try {
       const { categoryName } = request.body;
       const categoryId = request.params.categoryId;
       const category = await Category.findById(categoryId);
-  
+
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
       }
@@ -98,7 +98,7 @@ class CategoryController {
     }
   }
 
-  static async deleteCategory (request, response) {
+  static async deleteCategory(request, response) {
     try {
       const categoryId = request.params.categoryId;
       const category = await Category.findById(categoryId);
@@ -121,16 +121,16 @@ class CategoryController {
     }
   }
 
-  static async getProductsFromCategory (request, response) {
+  static async getProductsFromCategory(request, response) {
     try {
       const categoryId = request.params.categoryId;
       const category = await Category.findById(categoryId);
-  
+
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
       }
 
-      const categoryProducts = await Category.findById(categoryId).populate('products');
+      const categoryProducts = await Category.findById(categoryId).populate('products', 'productName').exec();
 
       return response.status(200).json({
         data: categoryProducts.products
@@ -144,13 +144,13 @@ class CategoryController {
     }
   }
 
-  static async addProductToCategory (request, response) {
+  static async addProductToCategory(request, response) {
     try {
       const categoryId = request.params.categoryId;
       const productId = request.params.productId;
       let category = await Category.findById(categoryId);
       const product = await Product.findById(productId);
-  
+
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
       } else if (!product) {
@@ -164,9 +164,10 @@ class CategoryController {
         });
       }
 
-      category = await Category.findByIdAndUpdate(categoryId, { $push: {
-        products: [ ObjectId(productId) ]
-      },
+      category = await Category.findByIdAndUpdate(categoryId, {
+        $push: {
+          products: [ObjectId(productId)]
+        },
         $set: {
           updatedAt: Date.now()
         }
@@ -185,22 +186,23 @@ class CategoryController {
     }
   }
 
-  static async removeProductFromCategory (request, response) {
+  static async removeProductFromCategory(request, response) {
     try {
       const categoryId = request.params.categoryId;
       const productId = request.params.productId;
       const category = await Category.findById(categoryId);
       const product = await Product.findById(productId);
-  
+
       if (!category) {
         return response.status(404).json({ error: 'Category Not Found' });
       } else if (!product) {
         return response.status(404).json({ error: 'Product Not Found' });
       }
 
-      await Category.findByIdAndUpdate(categoryId, { $pull: {
-        products: ObjectId(productId)
-      },
+      await Category.findByIdAndUpdate(categoryId, {
+        $pull: {
+          products: ObjectId(productId)
+        },
         $set: {
           updatedAt: Date.now()
         }
