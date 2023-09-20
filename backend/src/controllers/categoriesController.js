@@ -166,7 +166,7 @@ class CategoryController {
 
       category = await Category.findByIdAndUpdate(categoryId, {
         $push: {
-          products: [ObjectId(productId)]
+          products: [productId]
         },
         $set: {
           updatedAt: Date.now()
@@ -201,7 +201,7 @@ class CategoryController {
 
       await Category.findByIdAndUpdate(categoryId, {
         $pull: {
-          products: ObjectId(productId)
+          products: productId
         },
         $set: {
           updatedAt: Date.now()

@@ -38,7 +38,8 @@ router.post('/upload', fileUpload({ createParentPath: true }), async (req, res) 
                         }
                     });
                 }
-                farmer.image = fileName;
+                const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+                farmer.image = `${basePath}${fileName}`;
                 await farmer.save();
                 // await Farmer.findByIdAndUpdate(req.user.id, { image: fileName });
                 return res.status(200).json({

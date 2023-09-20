@@ -54,14 +54,14 @@ class CartController {
         })
       }
 
-      let cart = await Customer.findOne({ customerId: ObjectId(customerId) });
+      let cart = await Cart.findOne({ customerId });
 
       if (cart) {
         return response.status(400).json({ error: 'Cart Already Exists' });
       }
 
       cart = await Cart.create({
-        customerId: ObjectId(customerId),
+        customerId,
       });
 
       cart.save();
@@ -170,7 +170,7 @@ class CartController {
 
       cart = await Cart.findByIdAndUpdate(cartId, {
         $push: {
-          products: [ObjectId(productId)]
+          products: [productId]
         },
         $set: {
           updatedAt: Date.now(),
@@ -210,7 +210,7 @@ class CartController {
 
       cart = await Cart.findByIdAndUpdate(cartId, {
         $pull: {
-          products: ObjectId(productId)
+          products: productId
         },
         $set: {
           updatedAt: Date.now(),
