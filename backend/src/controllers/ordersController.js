@@ -1,4 +1,5 @@
 const Order = require('../models/orderModel');
+const Cart = require('../models/cartModel');
 
 class OrderController {
   static async getOrders (request, response) {
@@ -143,7 +144,9 @@ class OrderController {
       }
 
       const cartOrder = await Order.findById(orderId).populate('cartId');
-      return response.status(200).json({ data: cartOrder.cartId });
+      const cart = await Cart.findById(cartOrder.cartId).populate('products');
+
+      return response.status(200).json({ data: cart });
     } catch (error) {
       return response.status(500).json({
         message: 'Something Went Wrong',

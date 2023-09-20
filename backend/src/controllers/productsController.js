@@ -52,7 +52,7 @@ class ProductController {
       const product = await Product.create({
         productName,
         price,
-        farmerId: ObjectId(farmerId),
+        farmerId: farmerId,
         description
       });
 
@@ -79,14 +79,6 @@ class ProductController {
 
       if (!product) {
         return response.status(404).json({ error: 'Product Not Found' });
-      }
-
-      if (!productName || !price || !description) {
-        return response.status(400).json({
-          productName: productName ? 'Valid' : 'Required',
-          price: price ? 'Valid' : 'Required',
-          description: description ? 'Valid' : 'Required'
-        });
       }
 
       const updatedProduct = await Product.findByIdAndUpdate(productId, {
