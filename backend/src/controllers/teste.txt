@@ -1,0 +1,45 @@
+console.log(foundUser.fillName);
+        if (!foundUser) {
+            return res.status(404).json({
+                message: 'User not found',
+            });
+        }
+        const isMatch = await comparePassword(password, foundUser.password);
+        if (isMatch) {
+            res.status(200).json({
+                message: 'Login successful',
+                // token: token,
+                data: foundUser,
+            });
+        } else {
+            return res.status(400).json({
+                message: 'Invalid password',
+            });
+        }
+        // const token = await generateToken(foundUser._id);
+
+        try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({
+                message: 'All feilds are required',
+                feilds: {
+                    email: email ? 'Valid' : 'Required',
+                    password: password ? 'Valid' : 'Required',
+                },
+            });
+        }
+        
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Something went wrong',
+            error: error.message,
+        });
+    }
+
+     // res.header('Access-Control-Allow-Origin', '*'); // '*' to give access to any origin
+    // res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization'); // to give access to all the headers provided
+    // if (req.method === 'OPTIONS') {
+    //     res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET'); // to give access to all the methods provided
+    //     return res.status(200).json({});
