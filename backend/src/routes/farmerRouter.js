@@ -11,7 +11,7 @@ const verifyJWT = require('../middlewares/faVerifyJWT');
 router.post('/register', createFarmer);
 router.get('/:email', getFarmer);
 router.get('/', getFarmers);
-router.put('/:id', updateFarmer);
-router.delete('/:id', deleteFarmer);
+router.put('/:id', verifyJWT, updateFarmer);
+router.delete('/:id', verifyJWT, deleteFarmer);
 
 module.exports = router;

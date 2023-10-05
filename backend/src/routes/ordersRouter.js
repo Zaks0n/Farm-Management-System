@@ -1,6 +1,6 @@
 const express = require('express');
 const OrderController = require('../controllers/ordersController');
-const verifyJWT = require('../middlewares/verifyJWT');
+const verifyJWT = require('../middlewares/cusVerifyJWT');
 
 const orderRouter = express.Router();
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const CartController = require('../controllers/cartsController');
-const verifyJWT = require('../middlewares/verifyJWT');
+const verifyJWT = require('../middlewares/cusVerifyJWT');
 
 const cartRouter = express.Router();
 
@@ -24,7 +24,7 @@ cartRouter.post('/carts/:cartId/products/:productId', verifyJWT, (request, respo
   CartController.addProductToCart(request, response);
 });
 
-cartRouter.put('/carts/:cartId', verifyJWT, (request, response) => { 
+cartRouter.put('/carts/:cartId', verifyJWT, (request, response) => {
   CartController.updateCart(request, response);
 });
 

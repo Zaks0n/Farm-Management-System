@@ -3,7 +3,7 @@ import { Footer, Navbar } from "../components";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 const Checkout = () => {
-  const state = useSelector((state) => state.handleCart);
+  const state = useSelector((state) => state.cart);
 
   const EmptyCart = () => {
     return (
@@ -154,7 +154,15 @@ const Checkout = () => {
                         <br />
                         <select className="form-select" id="country" required>
                           <option value="">Choose...</option>
-                          <option>India</option>
+                          <option value="Eritrea">Eritrea</option>
+                          <option value="KSA">KSA</option>
+                          <option value="Sudan">Sudan</option>
+                          <option value="Kenya">Kenya</option>
+                          <option value="Qatar">Qatar</option>
+                          <option value="USA">USA</option>
+                          <option value="Canada">Canada</option>
+                          <option value="UK">UK</option>
+                          <option value="France">France</option>
                         </select>
                         <div className="invalid-feedback">
                           Please select a valid country.
@@ -168,7 +176,7 @@ const Checkout = () => {
                         <br />
                         <select className="form-select" id="state" required>
                           <option value="">Choose...</option>
-                          <option>Punjab</option>
+                          <option>Khartoum</option>
                         </select>
                         <div className="invalid-feedback">
                           Please provide a valid state.

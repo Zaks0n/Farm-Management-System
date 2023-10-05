@@ -5,13 +5,12 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  products: {
-    type: [{
-      type: [String],
-      ref: 'Product'
+  products:
+    [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      default: []
     }],
-    default: []
-  },
   createdAt: {
     type: Date,
     default: Date.now()

@@ -1,3 +1,5 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable indent */
 const jwt = require('jsonwebtoken');
 const Farmers = require('../models/farmerModel');
 const { comparePassword } = require('../utils/passwordHelber');
@@ -50,6 +52,7 @@ const handleLogin = async (req, res) => {
         res.cookie('farmtoken', refreshToken, { httpOnly: true, maxAge: 86400000, sameSite: 'none', secure: true });
         res.status(200).json({
             message: 'Login successful',
+            farmer: farmer[0].fullName,
             accessToken,
         });
     } catch (error) {

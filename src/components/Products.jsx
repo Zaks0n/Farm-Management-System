@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { addCart } from "../redux/action";
+import { addCart } from "../redux/features/cart/cartAction";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Products = () => {
   const [data, setData] = useState([]);
@@ -22,10 +23,11 @@ const Products = () => {
   useEffect(() => {
     const getProducts = async () => {
       setLoading(true);
-      const response = await fetch("/api/v1/products");
+      const response = await axios.get("http://localhost:8000/api/v1/products");
+      //const response = await fetch("/api/v1/products");
       if (componentMounted) {
-        setData(await response.clone().json());
-        setFilter(await response.json());
+        setData(await response.data.data);
+        setFilter(await response.data.data);
         setLoading(false);
       }
 
@@ -66,7 +68,7 @@ const Products = () => {
   };
 
   const filterProduct = (cat) => {
-    const updatedList = data.filter((item) => item.category === cat);
+    const updatedList = data.filter((item) => item.categoryId === cat);
     setFilter(updatedList);
   }
   const ShowProducts = () => {
@@ -74,18 +76,15 @@ const Products = () => {
       <>
         <div className="buttons text-center py-5">
           <button className="btn btn-outline-dark btn-sm m-2" onClick={() => setFilter(data)}>All</button>
-          <button className="btn btn-outline-dark btn-sm m-2" onClick={() => filterProduct("men's clothing")}>Poultry</button>
-          <button className="btn btn-outline-dark btn-sm m-2" onClick={() => filterProduct("women's clothing")}>
-            Livestock
-          </button>
-          <button className="btn btn-outline-dark btn-sm m-2" onClick={() => filterProduct("jewelery")}>Vaccinations</button>
-          <button className="btn btn-outline-dark btn-sm m-2" onClick={() => filterProduct("electronics")}>Vegetables</button>
+          <button className="btn btn-outline-dark btn-sm m-2" onClick={() => filterProduct("Food crops")}>Food crops</button>
+          <button className="btn btn-outline-dark btn-sm m-2" onClick={() => filterProduct("Livestock")}>Livestock</button>
+          <button className="btn btn-outline-dark btn-sm m-2" onClick={() => filterProduct("Fiber crops")}>Fiber crops</button>
         </div>
 
         {filter.map((product) => {
           return (
-            <div id={product.id} key={product.id} className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4">
-              <div className="card text-center h-100" key={product.id}>
+            <div id={product._id} key={product._id} className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4">
+              <div className="card text-center h-100" key={product._id}>
                 <img
                   className="card-img-top p-3"
                   src={product.image}
@@ -94,7 +93,7 @@ const Products = () => {
                 />
                 <div className="card-body">
                   <h5 className="card-title">
-                    {product.title.substring(0, 12)}...
+                    {product.productName.substring(0, 12)}
                   </h5>
                   <p className="card-text">
                     {product.description.substring(0, 90)}...
@@ -106,7 +105,7 @@ const Products = () => {
                     <li className="list-group-item">Vestibulum at eros</li> */}
                 </ul>
                 <div className="card-body">
-                  <Link to={"/product/" + product.id} className="btn btn-dark m-1">
+                  <Link to={"/product/" + product._id} className="btn btn-dark m-1">
                     Buy Now
                   </Link>
                   <button className="btn btn-dark m-1" onClick={() => addProduct(product)}>

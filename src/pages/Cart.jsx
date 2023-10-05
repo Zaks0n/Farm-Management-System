@@ -1,11 +1,11 @@
 import React from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
-import { addCart, delCart } from "../redux/action";
+import { addCart, delCart } from "../redux/features/cart/cartAction";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const state = useSelector((state) => state.handleCart);
+  const state = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
   const EmptyCart = () => {
@@ -54,7 +54,7 @@ const Cart = () => {
                   <div className="card-body">
                     {state.map((item) => {
                       return (
-                        <div key={item.id}>
+                        <div key={item._id}>
                           <div className="row d-flex align-items-center">
                             <div className="col-lg-3 col-md-12">
                               <div
@@ -64,7 +64,7 @@ const Cart = () => {
                                 <img
                                   src={item.image}
                                   // className="w-100"
-                                  alt={item.title}
+                                  alt={item.productName}
                                   width={100}
                                   height={75}
                                 />
@@ -73,7 +73,7 @@ const Cart = () => {
 
                             <div className="col-lg-5 col-md-6">
                               <p>
-                                <strong>{item.title}</strong>
+                                <strong>{item.productName}</strong>
                               </p>
                               {/* <p>Color: blue</p>
                               <p>Size: M</p> */}
